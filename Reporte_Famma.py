@@ -19,13 +19,8 @@ st.set_page_config(page_title="Generador de Reportes Productivos - FAMMA", layou
 # ==========================================
 MAQUINAS_MAP = {
     # --- ESTAMPADO ---
-    "LINEA 1.2": "LINEA 1.2",
-    "LINEA 1.4": "LINEA 1.4",
-    "LINEA 1.5": "LINEA 1.5",
-    "LINEA 2": "LINEA 2",
-    "LINEA 3": "LINEA 3",
-    "LINEA 4": "LINEA 4",
-    "RETRABAJO": "RETRABAJO",
+    "LINEA 1.2": "LINEA 1.2", "LINEA 1.4": "LINEA 1.4", "LINEA 1.5": "LINEA 1.5",
+    "LINEA 2": "LINEA 2", "LINEA 3": "LINEA 3", "LINEA 4": "LINEA 4", "RETRABAJO": "RETRABAJO",
 
     # --- SOLDADURA ---
     "Cell 1 Famma": "CELDAS", "Cell 2 Famma": "CELDAS", "Cell 3 Famma": "CELDAS",
@@ -237,7 +232,7 @@ def crear_pdf_informe_productivo(area, label_reporte, df_trend, df_piezas, mes_s
 # 5. INTERFAZ Y LÓGICA DE STREAMLIT
 # ==========================================
 
-# Variables de sesión para guardar los PDFs
+# Variables de sesión para PDFs
 if 'pdf_est_famma' not in st.session_state:
     st.session_state.pdf_est_famma = None
 if 'pdf_sol_famma' not in st.session_state:
@@ -247,18 +242,22 @@ if 'last_mes_famma' not in st.session_state:
 if 'last_anio_famma' not in st.session_state:
     st.session_state.last_anio_famma = None
 
+# Variables de sesión para Inputs
+hoy = datetime.now()
+if 'input_mes' not in st.session_state:
+    st.session_state.input_mes = hoy.month
+if 'input_anio' not in st.session_state:
+    st.session_state.input_anio = hoy.year
+
 st.title("🏭 Generador de Reportes Productivos - FAMMA")
 st.markdown("Selecciona los parámetros para extraer los datos de Wiidem y generar los PDFs de FAMMA.")
 
-hoy = datetime.now()
-mes_actual = hoy.month
-anio_actual = hoy.year
-
 with st.sidebar:
     st.header("Parámetros del Reporte")
-    mes = st.number_input("Mes", min_value=1, max_value=12, value=mes_actual)
-    anio = st.number_input("Año", min_value=2000, max_value=2100, value=anio_actual)
-    hs_rt_manual = st.number_input("Horas de Re-trabajo (Estampado)", min_value=0.0, value=0.0, step=1.0)
+    # Usamos 'key' para que Streamlit ate permanentemente el widget al valor en memoria
+    mes = st.number_input("Mes", min_value=1, max_value=12, value=st.session_state.input_mes, key="input_mes")
+    anio = st.number_input("Año", min_value=2000, max_value=2100, value=st.session_state.input_anio, key="input_anio")
+    hs_rt_manual = st.number_input("Horas de Re-trabajo (Estampado)", min_value=0.0, value=0.0, step=1.0, key="input_hs")
     
     generar_btn = st.button("Generar Reportes FAMMA", type="primary")
 
